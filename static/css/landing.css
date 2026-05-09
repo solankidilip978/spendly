@@ -1,0 +1,202 @@
+/* ------------------------------------------------------------------ */
+/* Landing hero — overrides + additions on top of style.css            */
+/* ------------------------------------------------------------------ */
+
+.hero {
+    display: block;
+    text-align: center;
+    padding: 5rem 2rem 4rem;
+    max-width: var(--max-width);
+    margin: 0 auto;
+}
+
+.hero-inner {
+    max-width: 760px;
+    margin: 0 auto 4rem;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    margin-bottom: 2.25rem;
+}
+
+.hero-badge::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+}
+
+.hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.75rem, 6vw, 4.75rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+}
+
+.hero-title em {
+    font-style: normal;
+    color: var(--accent);
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    color: var(--ink-muted);
+    line-height: 1.6;
+    max-width: 620px;
+    margin: 0 auto 2.5rem;
+}
+
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.hero-actions .btn-primary {
+    padding: 0.95rem 1.85rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    background: var(--ink);
+    color: var(--paper);
+}
+
+.hero-actions .btn-primary:hover {
+    background: var(--ink-soft);
+}
+
+/* ---- Preview window ---- */
+
+.hero-preview {
+    max-width: 1040px;
+    margin: 0 auto;
+}
+
+.hero-window {
+    background: var(--paper-warm);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 1.25rem;
+}
+
+.hero-window-dots {
+    display: flex;
+    gap: 0.45rem;
+    margin-bottom: 1.25rem;
+    padding-left: 0.25rem;
+}
+
+.hero-window-dots span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.hero-window-dots .dot-red    { background: #ed6c64; }
+.hero-window-dots .dot-yellow { background: #f5be3a; }
+.hero-window-dots .dot-green  { background: #62c554; }
+
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.hero-stat {
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem 1.4rem;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.hero-stat-label {
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+}
+
+.hero-stat-value {
+    font-family: var(--font-body);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+.hero-stat-meta {
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    font-weight: 500;
+}
+
+.hero-stat-meta-up   { color: var(--danger); }
+.hero-stat-meta-good { color: var(--accent); }
+
+.hero-bars {
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.hero-bar-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.hero-bar-label {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    font-weight: 500;
+    text-align: left;
+}
+
+.hero-bar-track {
+    height: 9px;
+    background: var(--border-soft);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.hero-bar {
+    height: 100%;
+    border-radius: 999px;
+}
+
+.hero-bar-food   { background: #e09a3c; }
+.hero-bar-travel { background: #5b8cd6; }
+.hero-bar-bills  { background: #8a7bd5; }
+
+/* ---- Responsive ---- */
+
+@media (max-width: 800px) {
+    .hero { padding: 3rem 1.25rem 2.5rem; }
+    .hero-inner { margin-bottom: 2.5rem; }
+    .hero-stats { grid-template-columns: 1fr; }
+    .hero-actions { flex-direction: column; align-items: stretch; }
+    .hero-bar-row { grid-template-columns: 70px 1fr; gap: 0.85rem; }
+}
