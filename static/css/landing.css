@@ -200,3 +200,76 @@
     .hero-actions { flex-direction: column; align-items: stretch; }
     .hero-bar-row { grid-template-columns: 70px 1fr; gap: 0.85rem; }
 }
+
+/* ------------------------------------------------------------------ */
+/* "See how it works" modal                                            */
+/* ------------------------------------------------------------------ */
+
+.modal[hidden] { display: none; }
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 15, 15, 0.72);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-dialog {
+    position: relative;
+    width: 100%;
+    max-width: 880px;
+    background: var(--ink);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+.modal-close {
+    position: absolute;
+    top: -2.5rem;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    color: var(--paper);
+    font-size: 1.75rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    opacity: 0.85;
+    transition: opacity 0.2s;
+}
+
+.modal-close:hover { opacity: 1; }
+
+.modal-video {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+}
+
+.modal-video iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+@media (max-width: 600px) {
+    .modal { padding: 1rem; }
+    .modal-close { top: -2.25rem; }
+}
