@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create account — Spendly</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-inner">
+            <a href="/" class="nav-brand">
+                <span class="brand-icon">◈</span>
+                <span class="brand-name">Spendly</span>
+            </a>
+            <div class="nav-links">
+                <a href="/login">Sign in</a>
+                <a href="/register" class="nav-cta">Get started</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        
+            
+        
+        
+
+<section class="auth-section">
+    <div class="auth-container">
+
+        <div class="auth-header">
+            <h1 class="auth-title">Create your account</h1>
+            <p class="auth-subtitle">Start tracking your expenses today</p>
+        </div>
+
+        <div class="auth-card">
+            
+            <div class="auth-error">Name is required and must be 80 characters or fewer.</div>
+            
+
+            <form method="POST" action="/register">
+                <div class="form-group">
+                    <label for="name">Full name</label>
+                    <input type="text" id="name" name="name"
+                           class="form-input" placeholder="Nitish Kumar"
+                           value=""
+                           required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input type="email" id="email" name="email"
+                           class="form-input" placeholder="nitish@example.com"
+                           value="newuser@example.com"
+                           required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password"
+                           class="form-input" placeholder="Min. 8 characters"
+                           required>
+                </div>
+                <button type="submit" class="btn-submit">Create account</button>
+            </form>
+        </div>
+
+        <p class="auth-switch">
+            Already have an account?
+            <a href="/login">Sign in</a>
+        </p>
+
+    </div>
+</section>
+
+
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <span class="brand-icon">◈</span>
+            <span class="footer-name">Spendly</span>
+            <p class="footer-copy">Track every rupee. Own your finances.</p>
+            <a href="/terms">Terms and Conditions</a>
+            <a href="/privacy">Privacy Policy</a>
+        </div>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+    
+</body>
+</html>
