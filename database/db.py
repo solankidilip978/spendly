@@ -104,3 +104,39 @@ def get_user_by_email(email):
         ).fetchone()
     finally:
         conn.close()
+
+
+def get_user_by_id(user_id):
+    conn = get_db()
+    try:
+        return conn.execute(
+            "SELECT id, name, email, created_at FROM users WHERE id = ?",
+            (user_id,),
+        ).fetchone()
+    finally:
+        conn.close()
+
+
+def get_recent_expenses(user_id, limit=5):
+    conn = get_db()
+    try:
+        return conn.execute(
+            "SELECT id, amount, category, date, description "
+            "FROM expenses WHERE user_id = ? "
+            "ORDER BY date DESC, id DESC LIMIT ?",
+            (user_id, limit),
+        ).fetchall()
+    finally:
+        conn.close()
+
+
+def get_month_summary(user_id, month_prefix):
+    conn = get_db()
+    try:
+        return conn.execute(
+            "SELECT COALESCE(SUM(amount), 0) AS total, COUNT(*) AS count "
+            "FROM expenses WHERE user_id = ? AND date LIKE ?",
+            (user_id, month_prefix + "%"),
+        ).fetchone()
+    finally:
+        conn.close()
