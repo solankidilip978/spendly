@@ -128,7 +128,7 @@ Don't pepper the user with clarifying questions for things you can reasonably de
 **UI plan:**
 - Modal dialog (not a full page) - users add expenses inline from the dashboard
 - Fields: amount (large, prominent), category (pill selector), date (defaults to today), note (optional)
-- Primary action "Add expense" anchors bottom-right; cancel is a subtle text button
+- Primary action "Add expense" anchors bottom-right; cancel is a subtle text button. Also this button text should be red color.
 - Amount field gets a currency symbol prefix and tabular-nums
 
 **Template:** `templates/partials/add_expense_modal.html` - extends nothing, included via `{% include %}`. Uses a `.modal` overlay pattern already in `base.css` if present.
