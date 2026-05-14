@@ -1,9 +1,19 @@
 import sqlite3
+from datetime import datetime
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash
 
-from database.db import create_user, get_db, get_user_by_email, init_db, seed_db
+from database.db import (
+    create_user,
+    get_db,
+    get_month_summary,
+    get_recent_expenses,
+    get_user_by_email,
+    get_user_by_id,
+    init_db,
+    seed_db,
+)
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "dev-only-change-in-prod"  # required for flash(); replace with env var before deploying
@@ -15,6 +25,8 @@ app.config["SECRET_KEY"] = "dev-only-change-in-prod"  # required for flash(); re
 
 @app.route("/")
 def landing():
+    if session.get("user_id"):
+        return redirect(url_for("profile"))
     return render_template("landing.html")
 
 
@@ -117,7 +129,40 @@ def logout():
 
 @app.route("/profile")
 def profile():
-    return "Profile page — coming in Step 4"
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("Please sign in to view your profile.", "error")
+        return redirect(url_for("login"))
+
+    user = get_user_by_id(user_id)
+    if user is None:
+        session.clear()
+        flash("Please sign in again.", "error")
+        return redirect(url_for("login"))
+
+    member_since = user["created_at"]
+    if member_since:
+        for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
+            try:
+                member_since = datetime.strptime(user["created_at"], fmt).strftime("%d %b %Y")
+                break
+            except ValueError:
+                continue
+
+    now = datetime.now()
+    month_prefix = now.strftime("%Y-%m")
+    summary = get_month_summary(user_id, month_prefix)
+    recent = get_recent_expenses(user_id, limit=5)
+
+    return render_template(
+        "profile.html",
+        user=user,
+        member_since=member_since,
+        month_label=now.strftime("%B %Y"),
+        month_total=summary["total"],
+        month_count=summary["count"],
+        recent_expenses=recent,
+    )
 
 
 @app.route("/expenses/add")

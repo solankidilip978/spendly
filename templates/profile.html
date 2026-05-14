@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Profile — Spendly{% endblock %}
+
+{% block content %}
+<section class="profile-container">
+
+    <header class="profile-header">
+        <span class="profile-eyebrow">Your account</span>
+        <h1 class="profile-title">Hi, <em>{{ user.name }}</em>.</h1>
+        <p class="profile-subtitle">Here's your account at a glance. Expense tools light up as you add transactions.</p>
+    </header>
+
+    <div class="profile-grid">
+
+        <article class="profile-card">
+            <h2 class="profile-card-title">Account details</h2>
+            <dl class="profile-rows">
+                <div class="profile-row">
+                    <dt>Name</dt>
+                    <dd>{{ user.name }}</dd>
+                </div>
+                <div class="profile-row">
+                    <dt>Email</dt>
+                    <dd>{{ user.email }}</dd>
+                </div>
+                <div class="profile-row">
+                    <dt>Member since</dt>
+                    <dd>{{ member_since or '—' }}</dd>
+                </div>
+            </dl>
+        </article>
+
+        <article class="profile-card">
+            <h2 class="profile-card-title">{{ month_label }}</h2>
+            {% if month_count and month_count > 0 %}
+                <div class="profile-stat">
+                    <span class="profile-stat-value">₹{{ "%.2f"|format(month_total) }}</span>
+                    <span class="profile-stat-label">spent across {{ month_count }} transaction{{ '' if month_count == 1 else 's' }}</span>
+                </div>
+            {% else %}
+                <p class="profile-card-body">No spending recorded this month.</p>
+                <p class="profile-card-hint">Totals update as you add expenses.</p>
+            {% endif %}
+        </article>
+
+        <article class="profile-card profile-card-wide">
+            <div class="profile-card-head">
+                <h2 class="profile-card-title">Recent expenses</h2>
+                <a href="{{ url_for('add_expense') }}" class="btn-primary">Add expense</a>
+            </div>
+
+            {% if recent_expenses and recent_expenses|length > 0 %}
+                <table class="profile-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th class="num">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for e in recent_expenses %}
+                        <tr>
+                            <td>{{ e.date }}</td>
+                            <td><span class="profile-tag">{{ e.category }}</span></td>
+                            <td>{{ e.description or '—' }}</td>
+                            <td class="num">₹{{ "%.2f"|format(e.amount) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="profile-empty">
+                    <div class="profile-empty-glyph" aria-hidden="true">◇</div>
+                    <p class="profile-empty-title">No expenses yet</p>
+                    <p class="profile-empty-body">Add your first one to start tracking where your money goes.</p>
+                </div>
+            {% endif %}
+        </article>
+
+    </div>
+
+</section>
+{% endblock %}
