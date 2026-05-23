@@ -36,25 +36,43 @@
         </article>
 
         <article class="profile-card">
-            <h2 class="profile-card-title">{{ month_label }}</h2>
-            {% if month_count and month_count > 0 %}
+            <h2 class="profile-card-title">{{ range_label }}</h2>
+            {% if range_count and range_count > 0 %}
                 <div class="profile-stat">
-                    <span class="profile-stat-value">₹{{ "%.2f"|format(month_total) }}</span>
-                    <span class="profile-stat-label">spent across {{ month_count }} transaction{{ '' if month_count == 1 else 's' }}</span>
+                    <span class="profile-stat-value">₹{{ "%.2f"|format(range_total) }}</span>
+                    <span class="profile-stat-label">spent across {{ range_count }} transaction{{ '' if range_count == 1 else 's' }}</span>
                 </div>
             {% else %}
-                <p class="profile-card-body">No spending recorded this month.</p>
-                <p class="profile-card-hint">Totals update as you add expenses.</p>
+                <div class="profile-stat">
+                    <span class="profile-stat-value">₹0.00</span>
+                    <span class="profile-stat-label">spent across 0 transactions</span>
+                </div>
+                <p class="profile-card-hint">No expenses in this range.</p>
             {% endif %}
         </article>
 
         <article class="profile-card profile-card-wide">
             <div class="profile-card-head">
-                <h2 class="profile-card-title">Recent expenses</h2>
+                <h2 class="profile-card-title">Expenses</h2>
                 <a href="{{ url_for('add_expense') }}" class="btn-danger">Add expense</a>
             </div>
 
-            {% if recent_expenses and recent_expenses|length > 0 %}
+            <form method="get" action="{{ url_for('profile') }}" class="profile-filter">
+                <div class="profile-filter-field">
+                    <label for="start_date">From</label>
+                    <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="form-input">
+                </div>
+                <div class="profile-filter-field">
+                    <label for="end_date">To</label>
+                    <input type="date" id="end_date" name="end_date" value="{{ end_date }}" class="form-input">
+                </div>
+                <div class="profile-filter-actions">
+                    <button type="submit" class="btn-primary">Apply</button>
+                    <a href="{{ url_for('profile') }}" class="btn-ghost">Clear</a>
+                </div>
+            </form>
+
+            {% if expenses %}
                 <table class="profile-table">
                     <thead>
                         <tr>
@@ -65,7 +83,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for e in recent_expenses %}
+                        {% for e in expenses %}
                         <tr>
                             <td>{{ e.date }}</td>
                             <td><span class="profile-tag">{{ e.category }}</span></td>
@@ -78,8 +96,8 @@
             {% else %}
                 <div class="profile-empty">
                     <div class="profile-empty-glyph" aria-hidden="true">◇</div>
-                    <p class="profile-empty-title">No expenses yet</p>
-                    <p class="profile-empty-body">Add your first one to start tracking where your money goes.</p>
+                    <p class="profile-empty-title">No expenses in this range</p>
+                    <p class="profile-empty-body">Try a wider date range, or add a new expense to get started.</p>
                 </div>
             {% endif %}
         </article>
