@@ -117,27 +117,31 @@ def get_user_by_id(user_id):
         conn.close()
 
 
-def get_recent_expenses(user_id, limit=5):
-    conn = get_db()
-    try:
-        return conn.execute(
-            "SELECT id, amount, category, date, description "
-            "FROM expenses WHERE user_id = ? "
-            "ORDER BY date DESC, id DESC LIMIT ?",
-            (user_id, limit),
-        ).fetchall()
-    finally:
-        conn.close()
-
-
-def get_month_summary(user_id, month_prefix):
+def get_range_summary(user_id, start_date, end_date):
     conn = get_db()
     try:
         return conn.execute(
             "SELECT COALESCE(SUM(amount), 0) AS total, COUNT(*) AS count "
-            "FROM expenses WHERE user_id = ? AND date LIKE ?",
-            (user_id, month_prefix + "%"),
+            "FROM expenses WHERE user_id = ? AND date BETWEEN ? AND ?",
+            (user_id, start_date, end_date),
         ).fetchone()
+    finally:
+        conn.close()
+
+
+def get_expenses_in_range(user_id, start_date, end_date, limit=None):
+    conn = get_db()
+    try:
+        sql = (
+            "SELECT id, amount, category, date, description "
+            "FROM expenses WHERE user_id = ? AND date BETWEEN ? AND ? "
+            "ORDER BY date DESC, id DESC"
+        )
+        params = [user_id, start_date, end_date]
+        if limit is not None:
+            sql += " LIMIT ?"
+            params.append(limit)
+        return conn.execute(sql, params).fetchall()
     finally:
         conn.close()
 

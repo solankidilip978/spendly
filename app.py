@@ -7,8 +7,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from database.db import (
     create_user,
     get_db,
-    get_month_summary,
-    get_recent_expenses,
+    get_expenses_in_range,
+    get_range_summary,
     get_user_by_email,
     get_user_by_id,
     get_user_password_hash,
@@ -20,6 +20,25 @@ from database.db import (
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "dev-only-change-in-prod"  # required for flash(); replace with env var before deploying
+
+
+def _resolve_date_range(raw_start, raw_end):
+    today = datetime.now().date()
+    default_start = today.replace(day=1)
+    default_end = today
+
+    if not raw_start and not raw_end:
+        return default_start, default_end, False
+
+    try:
+        start_dt = datetime.strptime(raw_start, "%Y-%m-%d").date() if raw_start else default_start
+        end_dt = datetime.strptime(raw_end, "%Y-%m-%d").date() if raw_end else default_end
+    except ValueError:
+        return default_start, default_end, True
+
+    if start_dt > end_dt:
+        start_dt, end_dt = end_dt, start_dt
+    return start_dt, end_dt, False
 
 
 # ------------------------------------------------------------------ #
@@ -152,19 +171,34 @@ def profile():
             except ValueError:
                 continue
 
-    now = datetime.now()
-    month_prefix = now.strftime("%Y-%m")
-    summary = get_month_summary(user_id, month_prefix)
-    recent = get_recent_expenses(user_id, limit=5)
+    raw_start = request.args.get("start_date", "").strip()
+    raw_end = request.args.get("end_date", "").strip()
+    start_dt, end_dt, parse_error = _resolve_date_range(raw_start, raw_end)
+
+    if parse_error:
+        flash("Invalid date — showing the current month instead.", "error")
+
+    start_str = start_dt.strftime("%Y-%m-%d")
+    end_str = end_dt.strftime("%Y-%m-%d")
+
+    if start_dt == end_dt:
+        range_label = start_dt.strftime("%d %b %Y")
+    else:
+        range_label = f"{start_dt.strftime('%d %b %Y')} — {end_dt.strftime('%d %b %Y')}"
+
+    summary = get_range_summary(user_id, start_str, end_str)
+    expenses = get_expenses_in_range(user_id, start_str, end_str)
 
     return render_template(
         "profile.html",
         user=user,
         member_since=member_since,
-        month_label=now.strftime("%B %Y"),
-        month_total=summary["total"],
-        month_count=summary["count"],
-        recent_expenses=recent,
+        start_date=start_str,
+        end_date=end_str,
+        range_label=range_label,
+        range_total=summary["total"],
+        range_count=summary["count"],
+        expenses=expenses,
     )
 
 
