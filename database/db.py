@@ -140,3 +140,38 @@ def get_month_summary(user_id, month_prefix):
         ).fetchone()
     finally:
         conn.close()
+
+
+def update_user_profile(user_id, name, email):
+    conn = get_db()
+    try:
+        conn.execute(
+            "UPDATE users SET name = ?, email = ? WHERE id = ?",
+            (name, email, user_id),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def update_user_password(user_id, password_hash):
+    conn = get_db()
+    try:
+        conn.execute(
+            "UPDATE users SET password_hash = ? WHERE id = ?",
+            (password_hash, user_id),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def get_user_password_hash(user_id):
+    conn = get_db()
+    try:
+        return conn.execute(
+            "SELECT password_hash FROM users WHERE id = ?",
+            (user_id,),
+        ).fetchone()
+    finally:
+        conn.close()

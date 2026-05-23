@@ -29,6 +29,10 @@
                     <dd>{{ member_since or '—' }}</dd>
                 </div>
             </dl>
+            <div class="profile-card-actions">
+                <a href="{{ url_for('profile_edit') }}" class="btn-ghost">Edit profile</a>
+                <a href="{{ url_for('profile_password') }}" class="btn-ghost">Change password</a>
+            </div>
         </article>
 
         <article class="profile-card">

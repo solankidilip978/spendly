@@ -97,6 +97,8 @@ pytest -s
 | `GET /login` | Implemented — handles login + session |
 | `GET /logout` | Implemented — clears session, redirects to / |
 | `GET /profile` | Implemented — renders `profile.html` |
+| `GET, POST /profile/edit` | Implemented — edit name and email |
+| `GET, POST /profile/password` | Implemented — change password |
 | `GET /expenses/add` | Stub — Step 7 |
 | `GET /expenses/<id>/edit` | Stub — Step 8 |
 | `GET /expenses/<id>/delete` | Stub — Step 9 |
