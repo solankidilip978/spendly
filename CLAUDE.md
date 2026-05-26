@@ -99,7 +99,7 @@ pytest -s
 | `GET /profile` | Implemented — renders `profile.html` |
 | `GET, POST /profile/edit` | Implemented — edit name and email |
 | `GET, POST /profile/password` | Implemented — change password |
-| `GET /expenses/add` | Stub — Step 7 |
+| `GET, POST /expenses/add` | Implemented — handles add expense form |
 | `GET, POST /expenses/<id>/edit` | Implemented — edit an expense (owner-only) |
 | `GET /expenses/<id>/delete` | Stub — Step 9 |
 
