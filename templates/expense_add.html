@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Add expense — Spendly{% endblock %}
+
+{% block content %}
+
+<section class="auth-section">
+    <div class="auth-container">
+
+        <div class="auth-header">
+            <h1 class="auth-title">Add expense</h1>
+            <p class="auth-subtitle">Record a new transaction</p>
+        </div>
+
+        <div class="auth-card">
+            {% if error %}
+            <div class="auth-error">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('add_expense') }}">
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <input type="number" id="amount" name="amount"
+                           class="form-input"
+                           step="0.01" min="0.01"
+                           value="{{ form_amount if form_amount is defined else '' }}"
+                           required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category" class="form-input" required>
+                        {% set selected_category = form_category if form_category is defined else 'Food' %}
+                        {% for c in categories %}
+                        <option value="{{ c }}" {% if c == selected_category %}selected{% endif %}>{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" name="date"
+                           class="form-input"
+                           value="{{ form_date if form_date is defined else today }}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input type="text" id="description" name="description"
+                           class="form-input"
+                           maxlength="200"
+                           value="{{ form_description if form_description is defined else '' }}">
+                </div>
+
+                <input type="hidden" name="start_date" value="{{ start_date }}">
+                <input type="hidden" name="end_date" value="{{ end_date }}">
+
+                <button type="submit" class="btn-submit">Add expense</button>
+            </form>
+        </div>
+
+        <p class="auth-switch">
+            {% if start_date or end_date %}
+            <a href="{{ url_for('profile', start_date=start_date, end_date=end_date) }}">Cancel</a>
+            {% else %}
+            <a href="{{ url_for('profile') }}">Cancel</a>
+            {% endif %}
+        </p>
+
+    </div>
+</section>
+
+{% endblock %}

@@ -5,6 +5,7 @@ from flask import Flask, abort, flash, redirect, render_template, request, sessi
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from database.db import (
+    create_expense,
     create_user,
     get_db,
     get_expense_for_user,
@@ -302,9 +303,72 @@ def profile_password():
     return redirect(url_for("profile"))
 
 
-@app.route("/expenses/add")
+@app.route("/expenses/add", methods=["GET", "POST"])
 def add_expense():
-    return "Add expense — coming in Step 7"
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("Please sign in to view your profile.", "error")
+        return redirect(url_for("login"))
+
+    raw_start = request.values.get("start_date", "").strip()
+    raw_end = request.values.get("end_date", "").strip()
+
+    if request.method == "GET":
+        today = datetime.now().strftime("%Y-%m-%d")
+        return render_template(
+            "expense_add.html",
+            categories=ALLOWED_CATEGORIES,
+            today=today,
+            start_date=raw_start,
+            end_date=raw_end,
+        )
+
+    amount_raw = request.form.get("amount", "").strip()
+    category = request.form.get("category", "").strip()
+    date_raw = request.form.get("date", "").strip()
+    description_raw = request.form.get("description", "").strip()
+
+    def _rerender(error):
+        return render_template(
+            "expense_add.html",
+            categories=ALLOWED_CATEGORIES,
+            start_date=raw_start,
+            end_date=raw_end,
+            error=error,
+            form_amount=amount_raw,
+            form_category=category,
+            form_date=date_raw,
+            form_description=description_raw,
+        )
+
+    try:
+        amount = float(amount_raw)
+    except ValueError:
+        return _rerender("Amount must be greater than zero.")
+    if amount <= 0:
+        return _rerender("Amount must be greater than zero.")
+
+    if category not in ALLOWED_CATEGORIES:
+        return _rerender("Please choose a valid category.")
+
+    try:
+        datetime.strptime(date_raw, "%Y-%m-%d")
+    except ValueError:
+        return _rerender("Please enter a valid date.")
+
+    if len(description_raw) > 200:
+        return _rerender("Description must be 200 characters or fewer.")
+    description = description_raw if description_raw else None
+
+    create_expense(user_id, amount, category, date_raw, description)
+
+    flash("Expense added.", "success")
+    redirect_kwargs = {}
+    if raw_start:
+        redirect_kwargs["start_date"] = raw_start
+    if raw_end:
+        redirect_kwargs["end_date"] = raw_end
+    return redirect(url_for("profile", **redirect_kwargs))
 
 
 @app.route("/expenses/<int:id>/edit", methods=["GET", "POST"])
