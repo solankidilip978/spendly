@@ -1,12 +1,13 @@
 import sqlite3
 from datetime import datetime
 
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask import Flask, abort, flash, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from database.db import (
     create_user,
     get_db,
+    get_expense_for_user,
     get_expenses_in_range,
     get_range_summary,
     get_user_by_email,
@@ -14,6 +15,7 @@ from database.db import (
     get_user_password_hash,
     init_db,
     seed_db,
+    update_expense,
     update_user_password,
     update_user_profile,
 )
@@ -39,6 +41,9 @@ def _resolve_date_range(raw_start, raw_end):
     if start_dt > end_dt:
         start_dt, end_dt = end_dt, start_dt
     return start_dt, end_dt, False
+
+
+ALLOWED_CATEGORIES = ("Food", "Transport", "Bills", "Health", "Entertainment", "Shopping", "Other")
 
 
 # ------------------------------------------------------------------ #
@@ -302,9 +307,78 @@ def add_expense():
     return "Add expense — coming in Step 7"
 
 
-@app.route("/expenses/<int:id>/edit")
+@app.route("/expenses/<int:id>/edit", methods=["GET", "POST"])
 def edit_expense(id):
-    return "Edit expense — coming in Step 8"
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("Please sign in to view your profile.", "error")
+        return redirect(url_for("login"))
+
+    raw_start = request.values.get("start_date", "").strip()
+    raw_end = request.values.get("end_date", "").strip()
+
+    expense = get_expense_for_user(id, user_id)
+    if expense is None:
+        abort(404)
+
+    if request.method == "GET":
+        return render_template(
+            "expense_edit.html",
+            expense=expense,
+            categories=ALLOWED_CATEGORIES,
+            start_date=raw_start,
+            end_date=raw_end,
+        )
+
+    amount_raw = request.form.get("amount", "").strip()
+    category = request.form.get("category", "").strip()
+    date_raw = request.form.get("date", "").strip()
+    description_raw = request.form.get("description", "").strip()
+
+    def _rerender(error):
+        return render_template(
+            "expense_edit.html",
+            expense=expense,
+            categories=ALLOWED_CATEGORIES,
+            start_date=raw_start,
+            end_date=raw_end,
+            error=error,
+            form_amount=amount_raw,
+            form_category=category,
+            form_date=date_raw,
+            form_description=description_raw,
+        )
+
+    try:
+        amount = float(amount_raw)
+    except ValueError:
+        return _rerender("Amount must be greater than zero.")
+    if amount <= 0:
+        return _rerender("Amount must be greater than zero.")
+
+    if category not in ALLOWED_CATEGORIES:
+        return _rerender("Please choose a valid category.")
+
+    try:
+        datetime.strptime(date_raw, "%Y-%m-%d")
+    except ValueError:
+        return _rerender("Please enter a valid date.")
+
+    if len(description_raw) > 200:
+        return _rerender("Description must be 200 characters or fewer.")
+    description = description_raw if description_raw else None
+
+    rowcount = update_expense(id, user_id, amount, category, date_raw, description)
+    if rowcount == 0:
+        abort(404)
+
+    flash("Expense updated.", "success")
+    redirect_kwargs = {}
+    if raw_start:
+        redirect_kwargs["start_date"] = raw_start
+    if raw_end:
+        redirect_kwargs["end_date"] = raw_end
+    return redirect(url_for("profile", **redirect_kwargs))
 
 
 @app.route("/expenses/<int:id>/delete")
