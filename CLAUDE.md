@@ -100,7 +100,7 @@ pytest -s
 | `GET, POST /profile/edit` | Implemented — edit name and email |
 | `GET, POST /profile/password` | Implemented — change password |
 | `GET /expenses/add` | Stub — Step 7 |
-| `GET /expenses/<id>/edit` | Stub — Step 8 |
+| `GET, POST /expenses/<id>/edit` | Implemented — edit an expense (owner-only) |
 | `GET /expenses/<id>/delete` | Stub — Step 9 |
 
 **Do not implement a stub route unless the active task explicitly targets that step.**
