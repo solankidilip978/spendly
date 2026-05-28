@@ -7,6 +7,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from database.db import (
     create_expense,
     create_user,
+    delete_expense as delete_expense_db,
     get_db,
     get_expense_for_user,
     get_expenses_in_range,
@@ -445,9 +446,39 @@ def edit_expense(id):
     return redirect(url_for("profile", **redirect_kwargs))
 
 
-@app.route("/expenses/<int:id>/delete")
+@app.route("/expenses/<int:id>/delete", methods=["GET", "POST"])
 def delete_expense(id):
-    return "Delete expense — coming in Step 9"
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("Please sign in to view your profile.", "error")
+        return redirect(url_for("login"))
+
+    raw_start = request.values.get("start_date", "").strip()
+    raw_end = request.values.get("end_date", "").strip()
+
+    expense = get_expense_for_user(id, user_id)
+    if expense is None:
+        abort(404)
+
+    if request.method == "GET":
+        return render_template(
+            "expense_delete.html",
+            expense=expense,
+            start_date=raw_start,
+            end_date=raw_end,
+        )
+
+    rowcount = delete_expense_db(id, user_id)
+    if rowcount == 0:
+        abort(404)
+
+    flash("Expense deleted.", "success")
+    redirect_kwargs = {}
+    if raw_start:
+        redirect_kwargs["start_date"] = raw_start
+    if raw_end:
+        redirect_kwargs["end_date"] = raw_end
+    return redirect(url_for("profile", **redirect_kwargs))
 
 
 with app.app_context():
