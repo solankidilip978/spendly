@@ -101,7 +101,7 @@ pytest -s
 | `GET, POST /profile/password` | Implemented — change password |
 | `GET, POST /expenses/add` | Implemented — handles add expense form |
 | `GET, POST /expenses/<id>/edit` | Implemented — edit an expense (owner-only) |
-| `GET /expenses/<id>/delete` | Stub — Step 9 |
+| `GET, POST /expenses/<id>/delete` | Implemented — delete an expense with confirmation (owner-only) |
 
 **Do not implement a stub route unless the active task explicitly targets that step.**
 
